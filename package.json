@@ -1,0 +1,33 @@
+{
+  "name": "dotenv-sync",
+  "version": "1.0.0",
+  "description": "Keep your .env in sync with .env.(ex|s)ample",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "babel": "babel lib -d dist",
+    "start": "node dist/index.js",
+    "build": "npm-run-all clean babel start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeshifu/dotenv-sync.git"
+  },
+  "keywords": [],
+  "author": "Luqman Olushi <olushilukmon03@gmail.com> (https://codeshifu.github.io/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codeshifu/dotenv-sync/issues"
+  },
+  "homepage": "https://github.com/codeshifu/dotenv-sync#readme",
+  "devDependencies": {
+    "@babel/cli": "7.4.3",
+    "@babel/core": "7.4.3",
+    "@babel/preset-env": "7.4.3",
+    "npm-run-all": "4.1.5",
+    "rimraf": "2.6.3"
+  }
+}
