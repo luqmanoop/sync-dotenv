@@ -16,7 +16,13 @@
     "type": "git",
     "url": "git+https://github.com/codeshifu/dotenv-sync.git"
   },
-  "keywords": [],
+  "keywords": [
+    "dotenv",
+    ".env",
+    ".env.example",
+    "sync .env",
+    "environment variables"
+  ],
   "author": "Luqman Olushi <olushilukmon03@gmail.com> (https://codeshifu.github.io/)",
   "license": "ISC",
   "bugs": {
