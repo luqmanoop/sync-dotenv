@@ -1,72 +1,73 @@
 {
-  "name": "dotenv-sync",
-  "version": "1.0.0",
-  "description": "Keep your .env in sync with .env.(ex|s)ample",
-  "keywords": [
-    ".env",
-    ".env.example",
-    "dotenv",
-    "environment variables",
-    "sync .env"
-  ],
-  "source": "lib/index.js",
-  "main": "dist/dotenv-sync.js",
-  "module": "dist/dotenv-sync.mjs",
-  "files": [
-    "dist",
-    "LICENSE.md",
-    "README.md"
-  ],
-  "homepage": "https://github.com/codeshifu/dotenv-sync#readme",
-  "bugs": {
-    "url": "https://github.com/codeshifu/dotenv-sync/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/codeshifu/dotenv-sync.git"
-  },
-  "license": "ISC",
-  "author": "Luqman Olushi <olushilukmon03@gmail.com> (https://codeshifu.github.io/)",
-  "directories": {
-    "lib": "lib"
-  },
-  "scripts": {
-    "babel": "babel lib -d dist",
-    "build": "npm-run-all clean babel start",
-    "bundle": "npm-run-all clean microbundle",
-    "clean": "rimraf dist",
-    "microbundle": "microbundle --external dotenv --target node --format es,cjs",
-    "start": "node dist/index.js"
-  },
-  "devDependencies": {
-    "@babel/cli": "7.4.3",
-    "@babel/core": "7.4.3",
-    "@babel/preset-env": "7.4.3",
-    "@babel/preset-typescript": "7.3.3",
-    "@types/chai": "4.1.7",
-    "@types/mocha": "5.2.6",
-    "@types/sinon": "7.0.11",
-    "@types/sinon-chai": "3.2.2",
-    "babel-eslint": "9.0.0",
-    "dotenv": "7.0.0",
-    "eslint": "5.16.0",
-    "eslint-config-airbnb": "17.1.0",
-    "eslint-config-prettier": "4.1.0",
-    "eslint-config-wesbos": "0.0.19",
-    "eslint-plugin-html": "5.0.3",
-    "eslint-plugin-import": "2.16.0",
-    "eslint-plugin-jsx-a11y": "6.2.1",
-    "eslint-plugin-prettier": "3.0.1",
-    "eslint-plugin-react": "7.12.4",
-    "eslint-plugin-react-hooks": "1.6.0",
-    "microbundle": "0.11.0",
-    "npm-run-all": "4.1.5",
-    "prettier": "1.16.4",
-    "rimraf": "2.6.3",
-    "ts-node": "8.0.3",
-    "typescript": "3.3.3"
-  },
-  "dependencies": {
-    "parse-dotenv": "2.0.1"
-  }
+	"name": "sync-dotenv",
+	"version": "0.0.0",
+	"description": "Keep your .env in sync with .env.(ex|s)ample",
+	"keywords": [
+		".env",
+		".env.example",
+		"dotenv",
+		"environment variables",
+		"sync .env"
+	],
+	"source": "lib/index.ts",
+	"main": "dist/sync-dotenv.js",
+	"module": "dist/sync-dotenv.mjs",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"LICENSE.md",
+		"README.md"
+	],
+	"homepage": "https://github.com/codeshifu/sync-dotenv#readme",
+	"bugs": {
+		"url": "https://github.com/codeshifu/sync-dotenv/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/codeshifu/sync-dotenv.git"
+	},
+	"license": "MIT",
+	"author": "Luqman Olushi <olushilukmon03@gmail.com> (https://codeshifu.github.io/)",
+	"directories": {
+		"lib": "lib"
+	},
+	"scripts": {
+		"babel": "babel lib -d dist --extensions .ts",
+		"build": "npm-run-all clean babel start",
+		"bundle": "npm-run-all clean microbundle",
+		"clean": "rimraf dist",
+		"microbundle": "microbundle --external dotenv --target node --format es,cjs",
+		"start": "node dist/index.js"
+	},
+	"devDependencies": {
+		"@babel/cli": "7.4.3",
+		"@babel/core": "7.4.3",
+		"@babel/preset-env": "7.4.3",
+		"@babel/preset-typescript": "7.3.3",
+		"@types/chai": "4.1.7",
+		"@types/mocha": "5.2.6",
+		"@types/sinon": "7.0.11",
+		"@types/sinon-chai": "3.2.2",
+		"babel-eslint": "9.0.0",
+		"dotenv": "7.0.0",
+		"eslint": "5.16.0",
+		"eslint-config-airbnb": "17.1.0",
+		"eslint-config-prettier": "4.1.0",
+		"eslint-config-wesbos": "0.0.19",
+		"eslint-plugin-html": "5.0.3",
+		"eslint-plugin-import": "2.16.0",
+		"eslint-plugin-jsx-a11y": "6.2.1",
+		"eslint-plugin-prettier": "3.0.1",
+		"eslint-plugin-react": "7.12.4",
+		"eslint-plugin-react-hooks": "1.6.0",
+		"microbundle": "0.11.0",
+		"npm-run-all": "4.1.5",
+		"prettier": "1.16.4",
+		"rimraf": "2.6.3",
+		"ts-node": "8.0.3",
+		"typescript": "3.3.3"
+	},
+	"dependencies": {
+		"parse-dotenv": "2.0.1"
+	}
 }
