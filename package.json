@@ -42,6 +42,11 @@
     "@babel/cli": "7.4.3",
     "@babel/core": "7.4.3",
     "@babel/preset-env": "7.4.3",
+    "@babel/preset-typescript": "7.3.3",
+    "@types/chai": "4.1.7",
+    "@types/mocha": "5.2.6",
+    "@types/sinon": "7.0.11",
+    "@types/sinon-chai": "3.2.2",
     "babel-eslint": "9.0.0",
     "dotenv": "7.0.0",
     "eslint": "5.16.0",
@@ -57,7 +62,9 @@
     "microbundle": "0.11.0",
     "npm-run-all": "4.1.5",
     "prettier": "1.16.4",
-    "rimraf": "2.6.3"
+    "rimraf": "2.6.3",
+    "ts-node": "8.0.3",
+    "typescript": "3.3.3"
   },
   "dependencies": {
     "parse-dotenv": "2.0.1"
