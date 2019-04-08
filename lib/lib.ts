@@ -79,6 +79,12 @@ export const syncEnv = (filename?: string) => {
 		process.cwd(),
 		filename || DEFAULT_EXAMPLE_ENV_FILENAME
 	);
+
+	if (!fileExists(ENV_PATH)) {
+		console.log("Cannot find .env in project root");
+		return;
+	}
+
 	if (!fileExists(EXAMPLE_ENV_PATH)) {
 		writeToExampleEnv(
 			DEFAULT_EXAMPLE_ENV_FILENAME,
