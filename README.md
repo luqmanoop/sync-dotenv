@@ -2,6 +2,8 @@
 	<img src="https://i.imgur.com/TRGtM83.gif">
 	<h1 style="font-weight:bold;">sync ⚙️ dotenv</h1>
     <p>Keep your .env in sync with .env.(ex|s)ample</p>
+    <img alt="Travis (.org)" src="https://img.shields.io/travis/codeshifu/sync-dotenv.svg?logo=travis">
+	<img alt="Coveralls github" src="https://img.shields.io/coveralls/github/codeshifu/sync-dotenv.svg?style=popout">
 </div>
 
 ## Motivation
