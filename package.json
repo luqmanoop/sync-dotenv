@@ -36,6 +36,7 @@
 		"build": "npm-run-all clean babel start",
 		"bundle": "npm-run-all clean microbundle",
 		"clean": "rimraf dist",
+		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"microbundle": "microbundle --external dotenv --target node --format es,cjs",
 		"start": "node dist/index.js",
 		"test": "nyc --reporter=html --reporter=text mocha",
