@@ -21,7 +21,7 @@ export const envToString = (parsed: EnvObject) =>
 
 export const writeToExampleEnv = (path: string, parsedEnv: object) => {
 	fs.writeFile(path, envToString(parsedEnv), err => {
-		if (err) console.log(`failed to write to ${basename(path)}`);
+		if (err) console.log(`failed to update ${basename(path)}`);
 	});
 };
 
@@ -37,41 +37,43 @@ export const emptyObjProps = (obj: EnvObject) => {
 export const getUniqueVarsFromEnvs = (env: object, envExample: EnvObject) =>
 	getObjKeys(envExample)
 		.filter(key => {
-			const envHasKey = Object.getOwnPropertyNames(env).includes(key);
+			const envHasKey = env.hasOwnProperty(key);
 			const keyValue = envExample[key];
 			return keyValue && envHasKey;
 		})
 		.map(key => ({ [key]: envExample[key] }));
 
-export const removeStaleVarsFromEnv = (env: object, vars: object[]) => {
+export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
 	let envCopy: EnvObject = { ...env };
 	envCopy = emptyObjProps(envCopy);
+
 	vars.forEach(envObj => {
 		const [key] = Object.keys(envObj);
-		if (envCopy[key]) delete envCopy[key];
-		envCopy = { ...envCopy, ...envObj };
+		if (envCopy.hasOwnProperty(key)) {
+			envCopy[key] = envObj[key];
+		}
 	});
 
 	return envCopy;
 };
 
-export const keepEnvsInSync = (env: object, envExample: object) => {
+export const getParsedEnvs = (env: object, envExample: object) => {
 	const envObj = { ...env };
 	const uniqueVars = getUniqueVarsFromEnvs(envObj, envExample);
 
 	return removeStaleVarsFromEnv(envObj, uniqueVars);
 };
 
-export const sync = (envPath: string, envExamplePath: string) => {
-	const syncedEnv = keepEnvsInSync(
+export const syncWithExampleEnv = (envPath: string, envExamplePath: string) => {
+	const parsedEnvs = getParsedEnvs(
 		parseEnv(envPath, { emptyLines: true }),
 		parseEnv(envExamplePath)
 	);
-	writeToExampleEnv(envExamplePath, syncedEnv);
+	writeToExampleEnv(envExamplePath, parsedEnvs);
 };
 
-export const watchAndSync = (envPath: string, envExamplePath: string) => {
-	fs.watchFile(envPath, () => sync(envPath, envExamplePath));
+export const watchEnv = (envPath: string, envExamplePath: string) => {
+	fs.watchFile(envPath, () => syncWithExampleEnv(envPath, envExamplePath));
 };
 
 export const syncEnv = (filename?: string) => {
@@ -81,8 +83,7 @@ export const syncEnv = (filename?: string) => {
 	);
 
 	if (!fileExists(ENV_PATH)) {
-		console.log("Cannot find .env in project root");
-		return;
+		throw new Error("Cannot find .env in project root");
 	}
 
 	if (!fileExists(EXAMPLE_ENV_PATH)) {
@@ -90,7 +91,7 @@ export const syncEnv = (filename?: string) => {
 			DEFAULT_EXAMPLE_ENV_FILENAME,
 			emptyObjProps(parseEnv(ENV_PATH))
 		);
-	} else sync(ENV_PATH, EXAMPLE_ENV_PATH);
+	} else syncWithExampleEnv(ENV_PATH, EXAMPLE_ENV_PATH);
 
-	watchAndSync(ENV_PATH, EXAMPLE_ENV_PATH);
+	watchEnv(ENV_PATH, EXAMPLE_ENV_PATH);
 };
