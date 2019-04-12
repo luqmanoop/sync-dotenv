@@ -34,14 +34,14 @@ export const emptyObjProps = (obj: EnvObject) => {
 	return objCopy;
 };
 
-export const getUniqueVarsFromEnvs = (env: object, envExample: EnvObject) =>
-	getObjKeys(envExample)
-		.filter(key => {
-			const envHasKey = env.hasOwnProperty(key);
-			const keyValue = envExample[key];
-			return keyValue && envHasKey;
-		})
-		.map(key => ({ [key]: envExample[key] }));
+export const getUniqueVarsFromEnvs = (env: object, envExample: EnvObject) => {
+	// making use of the .env because that should be the single source of truth
+	// the .env.example should be based off the .env and not otherwise
+	const uniqueKeys = new Set(getObjKeys(env));
+	const uniqueKeysArray: Array<string> = Array.from(uniqueKeys);
+	return uniqueKeysArray
+		.map(key => ({ [key]: envExample[key] || '' }));
+}
 
 export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
 	let envCopy: EnvObject = { ...env };
