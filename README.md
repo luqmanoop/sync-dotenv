@@ -1,5 +1,5 @@
 <div align="center">
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 	<img src="https://i.imgur.com/TRGtM83.gif">
 	<h1 style="font-weight:bold;">sync ⚙️ dotenv</h1>
     <p>Keep your .env in sync with .env.example</p>
@@ -88,7 +88,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://twitter.com/codeshifu"><img src="https://avatars0.githubusercontent.com/u/5154605?v=4" width="100px;" alt="Luqman Olushi O."/><br /><sub><b>Luqman Olushi O.</b></sub></a><br /><a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Code">💻</a> <a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Documentation">📖</a> <a href="#maintenance-codeshifu" title="Maintenance">🚧</a> <a href="#platform-codeshifu" title="Packaging/porting to new platform">📦</a> <a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Tests">⚠️</a></td></tr></table>
+<table><tr><td align="center"><a href="https://twitter.com/codeshifu"><img src="https://avatars0.githubusercontent.com/u/5154605?v=4" width="100px;" alt="Luqman Olushi O."/><br /><sub><b>Luqman Olushi O.</b></sub></a><br /><a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Code">💻</a> <a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Documentation">📖</a> <a href="#maintenance-codeshifu" title="Maintenance">🚧</a> <a href="#platform-codeshifu" title="Packaging/porting to new platform">📦</a> <a href="https://github.com/codeshifu/sync-dotenv/commits?author=codeshifu" title="Tests">⚠️</a></td><td align="center"><a href="https://www.patreon.com/cooproton"><img src="https://avatars0.githubusercontent.com/u/25608335?v=4" width="100px;" alt="Bolaji Olajide"/><br /><sub><b>Bolaji Olajide</b></sub></a><br /><a href="https://github.com/codeshifu/sync-dotenv/commits?author=BolajiOlajide" title="Code">💻</a></td></tr></table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
