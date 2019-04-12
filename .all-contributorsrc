@@ -1,0 +1,27 @@
+{
+  "projectName": "sync-dotenv",
+  "projectOwner": "codeshifu",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "codeshifu",
+      "name": "Luqman Olushi O.",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/5154605?v=4",
+      "profile": "https://twitter.com/codeshifu",
+      "contributions": [
+        "code",
+        "doc",
+        "maintenance",
+        "platform",
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}

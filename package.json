@@ -33,6 +33,7 @@
 		"lib": "lib"
 	},
 	"scripts": {
+		"add-contributor": "all-contributors add",
 		"babel": "babel lib -d dist --extensions .ts",
 		"build": "npm-run-all clean babel start",
 		"bundle": "npm-run-all clean microbundle",
@@ -41,6 +42,7 @@
 		"microbundle": "microbundle --external parse-dotenv --target node --format es,cjs",
 		"release": "npm run bundle && np",
 		"start": "node dist/index.js",
+		"start:dev": "nodemon --watch lib -e ts --exec npm run build",
 		"test": "nyc --reporter=html --reporter=text mocha",
 		"test:watch": "nodemon --watch test -e .ts --exec npm test"
 	},
@@ -53,6 +55,7 @@
 		"@types/mocha": "5.2.6",
 		"@types/sinon": "7.0.11",
 		"@types/sinon-chai": "3.2.2",
+		"all-contributors-cli": "6.2.0",
 		"babel-eslint": "9.0.0",
 		"chai": "4.2.0",
 		"coveralls": "3.0.3",
