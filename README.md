@@ -95,5 +95,5 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## License
 
-This project is license under
+This project is licensed under
 [MIT](https://github.com/codeshifu/sync-dotenv/blob/master/LICENSE)
