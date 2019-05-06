@@ -79,7 +79,7 @@ Default: `.env.example`
 
 ## Related
 
-- [parse-dotenv](https://github.com/codeshifu/parse-dotenv) - zero dependency .env to javascript object parser
+- [parse-dotenv](https://github.com/codeshifu/parse-dotenv) - zero dependency `.env` to javascript object parser
 
 ## Contributors
 
