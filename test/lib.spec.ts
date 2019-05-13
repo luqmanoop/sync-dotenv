@@ -48,7 +48,7 @@ describe("sync-dotenv lib", () => {
 		deleteFile(EXAMPLE_ENV_PATH);
 	});
 
-	const mockFsWriteFile = () => sandbox.stub(fs, "writeFile").returns();
+	// const mockFsWriteFile = () => sandbox.stub(fs, "writeFile").returns();
 
 	describe("fileExists()", () => {
 		it("fails to find .env file", () => {
@@ -75,8 +75,9 @@ describe("sync-dotenv lib", () => {
 	});
 
 	describe("writeToExampleEnv()", () => {
+		beforeEach(() => createFile(ENV_PATH, ENV_DATA));
+
 		it("writes to a .env.example successfully", () => {
-			createFile(ENV_PATH, ENV_DATA);
 			lib.writeToExampleEnv(EXAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			setTimeout(() => {
 				expect(parseEnv(EXAMPLE_ENV_PATH)).to.have.deep.property("PORT");
@@ -84,7 +85,13 @@ describe("sync-dotenv lib", () => {
 		});
 
 		it("failed to write a .env.example successfully", () => {
-			// TODO: cover
+			const message = "Failed to write to file";
+			sandbox.stub(fs, "writeFile").callsArgWith(2, { message });
+			try {
+				lib.writeToExampleEnv(EXAMPLE_ENV_PATH, parseEnv(ENV_PATH));
+			} catch (error) {
+				expect(error.message).contains(message);
+			}
 		});
 	});
 
@@ -150,31 +157,27 @@ describe("sync-dotenv lib", () => {
 		});
 	});
 
-	describe("watchAndSync", () => {
-		it("calls syncWithExampleEnv when watching file", () => {
-			const spy = sandbox.spy(lib, "syncWithExampleEnv");
-			lib.watchEnv(ENV_PATH, EXAMPLE_ENV_PATH);
-			setTimeout(() => {
-				expect(spy).callCount(1);
-			}, 500);
-		});
-	});
-
 	describe("syncEnv", () => {
-		it("fails when .env is not found in project root", () => {
-			try {
-				deleteFile(ENV_PATH);
-				lib.syncEnv();
-			} catch (error) {
-				expect(error.message).equals("Cannot find .env in project root");
-			}
+		it("fails to sync with source (.env) file", () => {
+			lib
+				.syncEnv(".env")
+				.catch(error => expect(error).equals("Cannot sync .env with .env"));
 		});
 
-		it("creates sample env if not found", () => {
-			deleteFile(EXAMPLE_ENV_PATH);
-			const spy = sandbox.spy(lib, "writeToExampleEnv");
-			lib.syncEnv();
-			expect(spy).callCount(1);
+		it("fails when .env is not found in project root", () => {
+			deleteFile(ENV_PATH);
+			lib
+				.syncEnv()
+				.catch(error =>
+					expect(error).equals("Cannot find .env in project root")
+				);
+		});
+
+		it("throw error for missing sample env", () => {
+			const sampleEnv = ".env.foo";
+			lib.syncEnv(sampleEnv).catch(error => {
+				expect(error).equals(`${sampleEnv} not found`);
+			});
 		});
 
 		it("uses existing sample env if available", () => {

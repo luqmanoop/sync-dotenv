@@ -1,7 +1,7 @@
 {
 	"name": "sync-dotenv",
 	"version": "1.0.0",
-	"description": "Keep your .env in sync with .env.(ex|s)ample",
+	"description": "Keep your .env in sync with .env.example",
 	"keywords": [
 		".env",
 		".env.example",
@@ -32,6 +32,9 @@
 	"directories": {
 		"lib": "lib"
 	},
+	"bin": {
+		"sync-dotenv": "dist/index.js"
+	},
 	"scripts": {
 		"add-contributor": "all-contributors add",
 		"babel": "babel lib -d dist --extensions .ts",
@@ -52,6 +55,7 @@
 		"@babel/preset-env": "7.4.3",
 		"@babel/preset-typescript": "7.3.3",
 		"@types/chai": "4.1.7",
+		"@types/meow": "5.0.0",
 		"@types/mocha": "5.2.6",
 		"@types/sinon": "7.0.11",
 		"@types/sinon-chai": "3.2.2",
@@ -84,6 +88,7 @@
 		"typescript": "3.3.3"
 	},
 	"dependencies": {
+		"meow": "5.0.0",
 		"parse-dotenv": "2.0.1"
 	},
 	"nyc": {

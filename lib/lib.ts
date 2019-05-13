@@ -21,7 +21,7 @@ export const envToString = (parsed: EnvObject) =>
 
 export const writeToExampleEnv = (path: string, parsedEnv: object) => {
 	fs.writeFile(path, envToString(parsedEnv), err => {
-		if (err) console.log(`failed to update ${basename(path)}`);
+		if (err) throw new Error(`Sync failed. ${err.message}`);
 	});
 };
 
@@ -39,9 +39,8 @@ export const getUniqueVarsFromEnvs = (env: object, envExample: EnvObject) => {
 	// the .env.example should be based off the .env and not otherwise
 	const uniqueKeys = new Set(getObjKeys(env));
 	const uniqueKeysArray: Array<string> = Array.from(uniqueKeys);
-	return uniqueKeysArray
-		.map(key => ({ [key]: envExample[key] || '' }));
-}
+	return uniqueKeysArray.map(key => ({ [key]: envExample[key] || "" }));
+};
 
 export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
 	let envCopy: EnvObject = { ...env };
@@ -72,26 +71,21 @@ export const syncWithExampleEnv = (envPath: string, envExamplePath: string) => {
 	writeToExampleEnv(envExamplePath, parsedEnvs);
 };
 
-export const watchEnv = (envPath: string, envExamplePath: string) => {
-	fs.watchFile(envPath, () => syncWithExampleEnv(envPath, envExamplePath));
-};
+const exit = (msg: string, code: number = 1) => Promise.reject(msg);
 
-export const syncEnv = (filename?: string) => {
+export const syncEnv = (filename?: string): Promise<string> => {
+	if (filename && filename.endsWith(".env"))
+		return exit("Cannot sync .env with .env");
+
 	const EXAMPLE_ENV_PATH = resolve(
 		process.cwd(),
 		filename || DEFAULT_EXAMPLE_ENV_FILENAME
 	);
 
-	if (!fileExists(ENV_PATH)) {
-		throw new Error("Cannot find .env in project root");
-	}
+	if (!fileExists(ENV_PATH)) return exit("Cannot find .env in project root");
 
-	if (!fileExists(EXAMPLE_ENV_PATH)) {
-		writeToExampleEnv(
-			DEFAULT_EXAMPLE_ENV_FILENAME,
-			emptyObjProps(parseEnv(ENV_PATH))
-		);
-	} else syncWithExampleEnv(ENV_PATH, EXAMPLE_ENV_PATH);
+	if (!fileExists(EXAMPLE_ENV_PATH)) return exit(`${filename} not found`);
 
-	watchEnv(ENV_PATH, EXAMPLE_ENV_PATH);
+	syncWithExampleEnv(ENV_PATH, EXAMPLE_ENV_PATH);
+	return Promise.resolve(EXAMPLE_ENV_PATH);
 };
