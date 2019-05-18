@@ -161,7 +161,9 @@ describe("sync-dotenv lib", () => {
 		it("fails to sync with source (.env) file", () => {
 			lib
 				.syncEnv(".env")
-				.catch(error => expect(error).equals("Cannot sync .env with .env"));
+				.catch(error =>
+					expect(error.message).equals("Cannot sync .env with .env")
+				);
 		});
 
 		it("fails when .env is not found in project root", () => {
@@ -169,14 +171,14 @@ describe("sync-dotenv lib", () => {
 			lib
 				.syncEnv()
 				.catch(error =>
-					expect(error).equals("Cannot find .env in project root")
+					expect(error.message).equals("Cannot find .env in project root")
 				);
 		});
 
 		it("throw error for missing sample env", () => {
 			const sampleEnv = ".env.foo";
 			lib.syncEnv(sampleEnv).catch(error => {
-				expect(error).equals(`${sampleEnv} not found`);
+				expect(error.message).equals(`${sampleEnv} not found`);
 			});
 		});
 

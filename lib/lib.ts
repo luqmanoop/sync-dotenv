@@ -71,9 +71,12 @@ export const syncWithExampleEnv = (envPath: string, envExamplePath: string) => {
 	writeToExampleEnv(envExamplePath, parsedEnvs);
 };
 
-const exit = (msg: string, code: number = 1) => Promise.reject(msg);
+const exit = (message: string, code: number = 1) =>
+	Promise.reject({ message, code });
 
-export const syncEnv = (filename?: string): Promise<string> => {
+export const syncEnv = (
+	filename?: string
+): Promise<{ msg: string; code: number } | string> => {
 	if (filename && filename.endsWith(".env"))
 		return exit("Cannot sync .env with .env");
 
