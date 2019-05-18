@@ -20,62 +20,65 @@ Enter `sync-dotenv` 🔥
 
 ## Description
 
-`sync-dotenv` is a tiny module that helps automate the process of keeping your `.env`
-file in sync with `.env.example`.
+`sync-dotenv` is a tiny module that helps automate the process of keeping your
+`.env` in sync with `.env.example`.
 
 ## Installation
 
 ```bash
-$ npm install sync-dotenv --save
+$ npm install -g sync-dotenv
 ```
 
-or using yarn
+Install as a dev dependency (**recommended**)
 
 ```bash
-$ yarn add sync-dotenv
+$ npm install -D sync-dotenv
 ```
 
 ## Usage
 
-By default, `sync-dotenv` looks for a `.env` file in your project root. Failure
-to find this file will cause it to throw an error.
+By default, `sync-dotenv` looks for a `.env` in your working directory and
+attempt to sync with `.env.example` when no argument is provided. Failure
+to find these files will cause the sync to fail.
 
-```javascript
-const syncEnv = require("sync-dotenv");
-
-syncEnv(); // use exisiting .env.example or create one
+```
+$ sync-dotenv
 ```
 
-```javascript
-const syncEnv = require("sync-dotenv");
+For CLI options, use the `--help` flag
 
-syncEnv(".env.development");
+```
+$ sync-dotenv --help
 ```
 
-Handling error when there's no `.env`
+## Examples
 
-```javascript
-const syncEnv = require("sync-dotenv");
+Sync (with `.env.example`) before every commit using [husky](https://github.com/typicode/husky)
 
-try {
-  syncEnv();
-} catch (error) {
-  console.log(error.message); // .env not found
+```js
+// package.json
+{
+  "scripts": {
+    "env": "sync-dotenv"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run env",
+    }
+  }
 }
 ```
 
-## API
+Or with file other than `.env.example`
 
-### syncEnv(filename)
-
-#### filename
-
-A string representing the (existing or new) example env file to sync with
-(relative to project root).
-
-Type: `String`
-
-Default: `.env.example`
+```diff
+{
+  "scripts": {
+-    "env": "sync-dotenv"
++    "env": "sync-dotenv --sample .env.development"
+  }
+}
+```
 
 ## Related
 
