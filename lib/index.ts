@@ -32,9 +32,9 @@ const { sample } = cli.flags;
 
 syncEnv(sample)
 	.then(sampleEnv => cp.exec(`git add ${sampleEnv}`))
-	.catch(error => {
-		console.log(error);
-		process.exit(1);
+	.catch(({ message, code }) => {
+		console.log(message);
+		process.exit(code);
 	});
 
 export default syncEnv;
