@@ -20,7 +20,7 @@ Enter `sync-dotenv` 🔥
 
 ## Description
 
-`sync-dotenv` is a tiny module that helps automate the process of keeping your
+`sync-dotenv` automates the process of keeping your
 `.env` in sync with `.env.example`.
 
 ## Installation
