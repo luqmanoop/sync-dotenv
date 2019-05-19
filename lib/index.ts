@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { syncEnv } from "./lib";
 import cp from "child_process";
 import meow from "meow";
+import { syncEnv } from "./lib";
 
 const cli = meow(
 	`
