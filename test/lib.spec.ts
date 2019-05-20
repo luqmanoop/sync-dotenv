@@ -1,5 +1,5 @@
 import fs from "fs";
-import { resolve } from "path";
+import { resolve, basename } from "path";
 import chai, { expect } from "chai";
 import sinon, { SinonSandbox } from "sinon";
 import sinonChai from "sinon-chai";
@@ -28,15 +28,25 @@ const deleteFile = (path: string) => {
 	if (fs.existsSync(path)) fs.unlinkSync(path);
 };
 
-const ENV_DATA = `APP_URL=https://awesome-app.io\r
-DB_HOST=\r
-DB_PORT=35724`;
+const ENV_DATA = `APP_URL=https://awesome-app.io\r\n
+APP_NAME=\r\n
+APP_ENV=\r\n
+APP_KEY=\r\n
+APP_DEBUG=\r\n
+LOG_CHANNEL=\r\n
+DB_CONNECTION=\r\n
+DB_HOST=\r\n
+DB_PORT=\r\n
+DB_DATABASE=\r\n
+DB_USERNAME=\r\n
+DB_PASSWORD=\r\n
+OTHER_ENV=`;
 
 describe("sync-dotenv lib", () => {
 	let sandbox: SinonSandbox;
 
 	beforeEach(() => {
-		createFile(ENV_PATH);
+		createFile(ENV_PATH, ENV_DATA);
 		createFile(EXAMPLE_ENV_PATH);
 		sandbox = sinon.createSandbox();
 	});
@@ -47,8 +57,6 @@ describe("sync-dotenv lib", () => {
 		deleteFile(ENV_PATH);
 		deleteFile(EXAMPLE_ENV_PATH);
 	});
-
-	// const mockFsWriteFile = () => sandbox.stub(fs, "writeFile").returns();
 
 	describe("fileExists()", () => {
 		it("fails to find .env file", () => {
@@ -64,13 +72,6 @@ describe("sync-dotenv lib", () => {
 	describe("getObjKeys", () => {
 		it("get object keys", () => {
 			expect(lib.getObjKeys({ a: 1, b: 2 })).to.deep.equals(["a", "b"]);
-		});
-	});
-
-	describe("envToString()", () => {
-		it("parses env obj to string", () => {
-			createFile(ENV_FILENAME, ENV_DATA);
-			expect(lib.envToString(parseEnv(ENV_PATH))).equals(ENV_DATA);
 		});
 	});
 
@@ -186,6 +187,20 @@ describe("sync-dotenv lib", () => {
 			const spy = sandbox.spy(lib, "syncWithExampleEnv");
 			lib.syncEnv();
 			expect(spy).callCount(1);
+		});
+
+		it("strips all empty line entries", () => {
+			createFile(ENV_FILENAME, ENV_DATA);
+			const parsedEnv = parseEnv(ENV_FILENAME, { emptyLines: true });
+
+			const envString = lib.envToString(parsedEnv);
+			const emptyLines = Object.keys(parsedEnv).filter(key =>
+				key.startsWith("__EMPTYLINE")
+			).length;
+
+			if (emptyLines > 9) {
+				expect(envString.includes("__EMPTYLINE_")).to.be.false;
+			}
 		});
 	});
 });

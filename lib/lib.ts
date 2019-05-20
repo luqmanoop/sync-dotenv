@@ -17,7 +17,7 @@ export const envToString = (parsed: EnvObject) =>
 	getObjKeys(parsed)
 		.map(key => `${key}=${parsed[key] || ""}`)
 		.join("\r\n")
-		.replace(/(__\w+_\d__=)/g, "");
+		.replace(/(__\w+_\d+__=)/g, "");
 
 export const writeToExampleEnv = (path: string, parsedEnv: object) => {
 	fs.writeFile(path, envToString(parsedEnv), err => {
