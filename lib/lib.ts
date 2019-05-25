@@ -77,7 +77,7 @@ const exit = (message: string, code: number = 1) =>
 export const syncEnv = (
 	filename?: string
 ): Promise<{ msg: string; code: number } | string> => {
-	if (filename && filename.endsWith(".env"))
+	if (filename && filename === ".env")
 		return exit("Cannot sync .env with .env");
 
 	const EXAMPLE_ENV_PATH = resolve(
