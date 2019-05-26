@@ -2,8 +2,8 @@ import { resolve, basename } from "path";
 import fs from "fs";
 import parseEnv from "parse-dotenv";
 
-const ENV_PATH = resolve(process.cwd(), ".env");
-const DEFAULT_EXAMPLE_ENV_FILENAME = ".env.example";
+const DEFAULT_ENV_PATH = resolve(process.cwd(), ".env");
+const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), ".env.example");
 
 interface EnvObject {
 	[key: string]: any;
@@ -19,7 +19,7 @@ export const envToString = (parsed: EnvObject) =>
 		.join("\r\n")
 		.replace(/(__\w+_\d+__=)/g, "");
 
-export const writeToExampleEnv = (path: string, parsedEnv: object) => {
+export const writeToSampleEnv = (path: string, parsedEnv: object) => {
 	fs.writeFile(path, envToString(parsedEnv), err => {
 		if (err) throw new Error(`Sync failed. ${err.message}`);
 	});
@@ -63,32 +63,42 @@ export const getParsedEnvs = (env: object, envExample: object) => {
 	return removeStaleVarsFromEnv(envObj, uniqueVars);
 };
 
-export const syncWithExampleEnv = (envPath: string, envExamplePath: string) => {
+export const syncWithSampleEnv = (envPath: string, envExamplePath: string) => {
 	const parsedEnvs = getParsedEnvs(
 		parseEnv(envPath, { emptyLines: true }),
 		parseEnv(envExamplePath)
 	);
-	writeToExampleEnv(envExamplePath, parsedEnvs);
+	writeToSampleEnv(envExamplePath, parsedEnvs);
 };
 
 const exit = (message: string, code: number = 1) =>
 	Promise.reject({ message, code });
 
 export const syncEnv = (
-	filename?: string
+	sampleEnv?: string,
+	source?: string
 ): Promise<{ msg: string; code: number } | string> => {
-	if (filename && filename === ".env")
+	if (sampleEnv && (sampleEnv === ".env" || basename(sampleEnv) === ".env"))
 		return exit("Cannot sync .env with .env");
 
-	const EXAMPLE_ENV_PATH = resolve(
+	const SAMPLE_ENV_PATH = resolve(
 		process.cwd(),
-		filename || DEFAULT_EXAMPLE_ENV_FILENAME
+		sampleEnv || DEFAULT_SAMPLE_ENV
 	);
 
-	if (!fileExists(ENV_PATH)) return exit("Cannot find .env in project root");
+	let envPath = source
+		? fileExists(source)
+			? source
+			: null
+		: DEFAULT_ENV_PATH;
 
-	if (!fileExists(EXAMPLE_ENV_PATH)) return exit(`${filename} not found`);
+	if (envPath === null) return exit(`${source} not found`);
 
-	syncWithExampleEnv(ENV_PATH, EXAMPLE_ENV_PATH);
-	return Promise.resolve(EXAMPLE_ENV_PATH);
+	if (!source && !fileExists(envPath)) return exit(".env doesn't exists");
+
+	if (!fileExists(SAMPLE_ENV_PATH))
+		return exit(`${sampleEnv || basename(DEFAULT_SAMPLE_ENV)} not found`);
+
+	syncWithSampleEnv(envPath, SAMPLE_ENV_PATH);
+	return Promise.resolve(SAMPLE_ENV_PATH);
 };
