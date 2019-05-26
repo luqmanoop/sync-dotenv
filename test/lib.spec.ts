@@ -14,7 +14,7 @@ interface Callback {
 
 const ENV_FILENAME = ".env";
 const ENV_PATH = resolve(process.cwd(), ENV_FILENAME);
-const EXAMPLE_ENV_PATH = resolve(process.cwd(), ".env.example");
+const SAMPLE_ENV_PATH = resolve(process.cwd(), ".env.example");
 
 const createFile = (
 	path: string,
@@ -47,7 +47,7 @@ describe("sync-dotenv lib", () => {
 
 	beforeEach(() => {
 		createFile(ENV_PATH, ENV_DATA);
-		createFile(EXAMPLE_ENV_PATH);
+		createFile(SAMPLE_ENV_PATH);
 		sandbox = sinon.createSandbox();
 	});
 
@@ -55,7 +55,7 @@ describe("sync-dotenv lib", () => {
 
 	after(() => {
 		deleteFile(ENV_PATH);
-		deleteFile(EXAMPLE_ENV_PATH);
+		deleteFile(SAMPLE_ENV_PATH);
 	});
 
 	describe("fileExists()", () => {
@@ -75,13 +75,13 @@ describe("sync-dotenv lib", () => {
 		});
 	});
 
-	describe("writeToExampleEnv()", () => {
+	describe("writeToSampleEnv()", () => {
 		beforeEach(() => createFile(ENV_PATH, ENV_DATA));
 
 		it("writes to a .env.example successfully", () => {
-			lib.writeToExampleEnv(EXAMPLE_ENV_PATH, parseEnv(ENV_PATH));
+			lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			setTimeout(() => {
-				expect(parseEnv(EXAMPLE_ENV_PATH)).to.have.deep.property("PORT");
+				expect(parseEnv(SAMPLE_ENV_PATH)).to.have.deep.property("PORT");
 			}, 500);
 		});
 
@@ -89,7 +89,7 @@ describe("sync-dotenv lib", () => {
 			const message = "Failed to write to file";
 			sandbox.stub(fs, "writeFile").callsArgWith(2, { message });
 			try {
-				lib.writeToExampleEnv(EXAMPLE_ENV_PATH, parseEnv(ENV_PATH));
+				lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			} catch (error) {
 				expect(error.message).contains(message);
 			}
@@ -150,9 +150,9 @@ describe("sync-dotenv lib", () => {
 		it("sync .env with example env", () => {
 			createFile(ENV_PATH, ENV_DATA);
 
-			const writeToExampleEnvSpy = sandbox.spy(lib, "writeToExampleEnv");
+			const writeToExampleEnvSpy = sandbox.spy(lib, "writeToSampleEnv");
 
-			lib.syncWithExampleEnv(ENV_PATH, EXAMPLE_ENV_PATH);
+			lib.syncWithSampleEnv(ENV_PATH, SAMPLE_ENV_PATH);
 
 			expect(writeToExampleEnvSpy).callCount(1);
 		});
@@ -171,9 +171,14 @@ describe("sync-dotenv lib", () => {
 			deleteFile(ENV_PATH);
 			lib
 				.syncEnv()
-				.catch(error =>
-					expect(error.message).equals("Cannot find .env in project root")
-				);
+				.catch(error => expect(error.message).equals(".env doesn't exists"));
+		});
+
+		it("throw error for missing sample env", () => {
+			deleteFile(SAMPLE_ENV_PATH);
+			lib.syncEnv().catch(error => {
+				expect(error.message).equals(`.env.example not found`);
+			});
 		});
 
 		it("throw error for missing sample env", () => {
@@ -184,7 +189,7 @@ describe("sync-dotenv lib", () => {
 		});
 
 		it("uses existing sample env if available", () => {
-			const spy = sandbox.spy(lib, "syncWithExampleEnv");
+			const spy = sandbox.spy(lib, "syncWithSampleEnv");
 			lib.syncEnv();
 			expect(spy).callCount(1);
 		});
@@ -201,6 +206,19 @@ describe("sync-dotenv lib", () => {
 			if (emptyLines > 9) {
 				expect(envString.includes("__EMPTYLINE_")).to.be.false;
 			}
+		});
+
+		it("error for invalid env source", () => {
+			const env = "foo/.env";
+			lib.syncEnv("", env).catch(({ message }) => {
+				expect(message).equals(`${env} not found`);
+			});
+		});
+
+		it("syncs with provided source", () => {
+			lib.syncEnv(undefined, ".env").then((sampleEnv: any) => {
+				expect(basename(sampleEnv)).equals(".env.example");
+			});
 		});
 	});
 });
