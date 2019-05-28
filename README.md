@@ -45,6 +45,12 @@ to find these files will cause the sync to fail.
 $ sync-dotenv
 ```
 
+Alternatively, you can use the `--env` and `--sample` flag to specify the source and destination file.
+
+```
+$ sync-dotenv --env foo/.env --sample bar/.env.example
+```
+
 For CLI options, use the `--help` flag
 
 ```
