@@ -1,6 +1,6 @@
 {
 	"name": "sync-dotenv",
-	"version": "2.0.3",
+	"version": "2.1.0",
 	"description": "Keep your .env in sync with .env.example",
 	"keywords": [
 		".env",
