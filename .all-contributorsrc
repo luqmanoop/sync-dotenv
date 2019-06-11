@@ -30,6 +30,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "akhilome",
+      "name": "Kizito Akhilome",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/15332525?v=4",
+      "profile": "http://kizi.to",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7
