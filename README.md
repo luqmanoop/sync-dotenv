@@ -51,6 +51,14 @@ Alternatively, you can use the `--env` and `--sample` flag to specify the source
 $ sync-dotenv --env foo/.env --sample bar/.env.example
 ```
 
+Also, in the situation where you want to keep multiple files in sync with one source `env` file you can make use of the `--samples` flag specifying a globbing pattern to match:
+
+```sh
+$ sync-dotenv --env foo/.env --samples "env-samples/*"
+
+# note: glob pattern should be provided as a string as shown above
+```
+
 For CLI options, use the `--help` flag
 
 ```

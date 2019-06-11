@@ -1,6 +1,7 @@
 import { resolve, basename } from "path";
 import fs from "fs";
 import parseEnv from "parse-dotenv";
+import globby from 'globby';
 
 const DEFAULT_ENV_PATH = resolve(process.cwd(), ".env");
 const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), ".env.example");
@@ -76,15 +77,17 @@ const exit = (message: string, code: number = 1) =>
 
 export const syncEnv = (
 	sampleEnv?: string,
-	source?: string
+	source?: string,
+	samples?: string
 ): Promise<{ msg: string; code: number } | string> => {
 	if (sampleEnv && (sampleEnv === ".env" || basename(sampleEnv) === ".env"))
 		return exit("Cannot sync .env with .env");
 
-	const SAMPLE_ENV_PATH = resolve(
-		process.cwd(),
-		sampleEnv || DEFAULT_SAMPLE_ENV
-	);
+	const SAMPLE_ENV_PATHS: string[] = !samples
+		? [resolve(process.cwd(), sampleEnv || DEFAULT_SAMPLE_ENV)]
+		: globby
+				.sync(samples)
+				.map((sample: string) => resolve(process.cwd(), sample));
 
 	let envPath = source
 		? fileExists(source)
@@ -96,9 +99,12 @@ export const syncEnv = (
 
 	if (!source && !fileExists(envPath)) return exit(".env doesn't exists");
 
-	if (!fileExists(SAMPLE_ENV_PATH))
-		return exit(`${sampleEnv || basename(DEFAULT_SAMPLE_ENV)} not found`);
+	if (!SAMPLE_ENV_PATHS.length) return exit(`${samples} did not match any file`);
 
-	syncWithSampleEnv(envPath, SAMPLE_ENV_PATH);
-	return Promise.resolve(SAMPLE_ENV_PATH);
+	if (!fileExists(SAMPLE_ENV_PATHS[0]))
+		return exit(`${sampleEnv || basename(DEFAULT_SAMPLE_ENV)} not found`);
+	
+	const sourcePath = envPath;
+	SAMPLE_ENV_PATHS.forEach(samplePath => syncWithSampleEnv(sourcePath, samplePath));
+	return Promise.resolve(SAMPLE_ENV_PATHS.join(' '));
 };

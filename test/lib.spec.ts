@@ -15,6 +15,7 @@ interface Callback {
 const ENV_FILENAME = ".env";
 const ENV_PATH = resolve(process.cwd(), ENV_FILENAME);
 const SAMPLE_ENV_PATH = resolve(process.cwd(), ".env.example");
+const SAMPLE_ENV_PATH_2 = resolve(process.cwd(), ".env.sample");
 
 const createFile = (
 	path: string,
@@ -33,6 +34,7 @@ APP_NAME=\r\n
 APP_ENV=\r\n
 APP_KEY=\r\n
 APP_DEBUG=\r\n
+PORT=\r\n
 LOG_CHANNEL=\r\n
 DB_CONNECTION=\r\n
 DB_HOST=\r\n
@@ -78,10 +80,11 @@ describe("sync-dotenv lib", () => {
 	describe("writeToSampleEnv()", () => {
 		beforeEach(() => createFile(ENV_PATH, ENV_DATA));
 
-		it("writes to a .env.example successfully", () => {
+		it("writes to a .env.example successfully", (done) => {
 			lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			setTimeout(() => {
 				expect(parseEnv(SAMPLE_ENV_PATH)).to.have.deep.property("PORT");
+				done();
 			}, 500);
 		});
 
@@ -159,6 +162,9 @@ describe("sync-dotenv lib", () => {
 	});
 
 	describe("syncEnv", () => {
+		before(() => createFile(SAMPLE_ENV_PATH_2));
+		after(() => deleteFile(SAMPLE_ENV_PATH_2));
+
 		it("fails to sync with source (.env) file", () => {
 			lib
 				.syncEnv(".env")
@@ -192,6 +198,19 @@ describe("sync-dotenv lib", () => {
 			const spy = sandbox.spy(lib, "syncWithSampleEnv");
 			lib.syncEnv();
 			expect(spy).callCount(1);
+		});
+
+		it('should error out if provided regex matched no files', async () => {
+			const pattern = 'env/invalid/*';
+			await lib.syncEnv(undefined, undefined, pattern).catch(error => {
+				expect(error.message).to.equal(`${pattern} did not match any file`);
+			});
+		});
+
+		it('syncs multiple sample env files', () => {
+			const spy = sandbox.spy(lib, "syncWithSampleEnv");
+			lib.syncEnv(undefined, undefined, ".env.*");
+			expect(spy).callCount(2);
 		});
 
 		it("strips all empty line entries", () => {

@@ -12,6 +12,7 @@ const cli = meow(
 	
 	-e, --env file .......... .env file location
 	-s, --sample file ....... alternate sample env file to sync with
+	-S, --samples "file.*" ........ alternate sample env files pattern to sync with
 
 
 	Note: If options is omitted, sync-dotenv will attempt to sync .env 
@@ -22,6 +23,7 @@ const cli = meow(
 	$ sync-dotenv 
 	$ sync-dotenv --sample .env.development
 	$ sync-dotenv --env server/.env --sample example.env
+	$ sync-dotenv --samples ".env.*"
 `,
 	{
 		flags: {
@@ -32,9 +34,9 @@ const cli = meow(
 	}
 );
 
-const { sample, s, env, e } = cli.flags;
+const { sample, s, env, e, samples, S } = cli.flags;
 
-syncEnv(sample || s, env || e)
+syncEnv(sample || s, env || e, samples || S)
 	.then(sampleEnv => cp.exec(`git add ${sampleEnv}`))
 	.catch(({ message, code }) => {
 		console.log(message);
