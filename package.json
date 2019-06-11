@@ -41,7 +41,7 @@
 		"bundle": "npm-run-all clean microbundle",
 		"clean": "rimraf dist",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
-		"microbundle": "microbundle --external parse-dotenv,meow,child_process --target node -f cjs --sourcemap false --compress false",
+		"microbundle": "microbundle --external parse-dotenv,meow,globby,child_process --target node -f cjs --sourcemap false --compress false",
 		"release": "npm run bundle && np",
 		"start": "node dist/index.js",
 		"start:dev": "nodemon --watch lib -e ts --exec npm run build",
