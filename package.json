@@ -91,7 +91,7 @@
 	"dependencies": {
 		"globby": "^9.2.0",
 		"meow": "5.0.0",
-		"parse-dotenv": "2.0.1"
+		"parse-dotenv": "2.1.0"
 	},
 	"nyc": {
 		"extension": [

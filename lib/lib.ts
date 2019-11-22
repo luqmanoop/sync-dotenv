@@ -1,7 +1,7 @@
 import { resolve, basename } from "path";
 import fs from "fs";
 import parseEnv from "parse-dotenv";
-import globby from 'globby';
+import globby from "globby";
 
 const DEFAULT_ENV_PATH = resolve(process.cwd(), ".env");
 const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), ".env.example");
@@ -29,18 +29,32 @@ export const writeToSampleEnv = (path: string, parsedEnv: object) => {
 export const emptyObjProps = (obj: EnvObject) => {
 	const objCopy = { ...obj };
 	Object.keys(objCopy).forEach(key => {
-		objCopy[key] = "";
+		if (!key.startsWith("__COMMENT_")) {
+			objCopy[key] = "";
+		}
 	});
 
 	return objCopy;
 };
 
-export const getUniqueVarsFromEnvs = (env: object, envExample: EnvObject) => {
+export const getUniqueVarsFromEnvs = (
+	env: EnvObject,
+	envExample: EnvObject
+) => {
 	// making use of the .env because that should be the single source of truth
 	// the .env.example should be based off the .env and not otherwise
 	const uniqueKeys = new Set(getObjKeys(env));
 	const uniqueKeysArray: Array<string> = Array.from(uniqueKeys);
-	return uniqueKeysArray.map(key => ({ [key]: envExample[key] || "" }));
+	return uniqueKeysArray.map((key: string) => {
+		if (key.startsWith("__COMMENT_")) {
+			return {
+				[key]: env[key]
+			};
+		}
+		return {
+			[key]: envExample[key] || ""
+		};
+	});
 };
 
 export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
@@ -66,7 +80,7 @@ export const getParsedEnvs = (env: object, envExample: object) => {
 
 export const syncWithSampleEnv = (envPath: string, envExamplePath: string) => {
 	const parsedEnvs = getParsedEnvs(
-		parseEnv(envPath, { emptyLines: true }),
+		parseEnv(envPath, { emptyLines: true, comments: true }),
 		parseEnv(envExamplePath)
 	);
 	writeToSampleEnv(envExamplePath, parsedEnvs);
@@ -99,12 +113,15 @@ export const syncEnv = (
 
 	if (!source && !fileExists(envPath)) return exit(".env doesn't exists");
 
-	if (!SAMPLE_ENV_PATHS.length) return exit(`${samples} did not match any file`);
+	if (!SAMPLE_ENV_PATHS.length)
+		return exit(`${samples} did not match any file`);
 
 	if (!fileExists(SAMPLE_ENV_PATHS[0]))
 		return exit(`${sampleEnv || basename(DEFAULT_SAMPLE_ENV)} not found`);
-	
+
 	const sourcePath = envPath;
-	SAMPLE_ENV_PATHS.forEach(samplePath => syncWithSampleEnv(sourcePath, samplePath));
-	return Promise.resolve(SAMPLE_ENV_PATHS.join(' '));
+	SAMPLE_ENV_PATHS.forEach(samplePath =>
+		syncWithSampleEnv(sourcePath, samplePath)
+	);
+	return Promise.resolve(SAMPLE_ENV_PATHS.join(" "));
 };

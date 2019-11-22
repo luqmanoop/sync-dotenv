@@ -34,6 +34,7 @@ APP_NAME=\r\n
 APP_ENV=\r\n
 APP_KEY=\r\n
 APP_DEBUG=\r\n
+# this is a comment
 PORT=\r\n
 LOG_CHANNEL=\r\n
 DB_CONNECTION=\r\n
@@ -80,7 +81,7 @@ describe("sync-dotenv lib", () => {
 	describe("writeToSampleEnv()", () => {
 		beforeEach(() => createFile(ENV_PATH, ENV_DATA));
 
-		it("writes to a .env.example successfully", (done) => {
+		it("writes to a .env.example successfully", done => {
 			lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			setTimeout(() => {
 				expect(parseEnv(SAMPLE_ENV_PATH)).to.have.deep.property("PORT");
@@ -200,14 +201,14 @@ describe("sync-dotenv lib", () => {
 			expect(spy).callCount(1);
 		});
 
-		it('should error out if provided regex matched no files', async () => {
-			const pattern = 'env/invalid/*';
+		it("should error out if provided regex matched no files", async () => {
+			const pattern = "env/invalid/*";
 			await lib.syncEnv(undefined, undefined, pattern).catch(error => {
 				expect(error.message).to.equal(`${pattern} did not match any file`);
 			});
 		});
 
-		it('syncs multiple sample env files', () => {
+		it("syncs multiple sample env files", () => {
 			const spy = sandbox.spy(lib, "syncWithSampleEnv");
 			lib.syncEnv(undefined, undefined, ".env.*");
 			expect(spy).callCount(2);
