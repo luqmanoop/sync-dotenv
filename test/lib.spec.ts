@@ -43,6 +43,7 @@ DB_PORT=\r\n
 DB_DATABASE=\r\n
 DB_USERNAME=\r\n
 DB_PASSWORD=\r\n
+test4="key#a23" # with comment
 OTHER_ENV=`;
 
 describe("sync-dotenv lib", () => {
