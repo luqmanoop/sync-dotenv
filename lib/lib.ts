@@ -29,6 +29,18 @@ export const writeToSampleEnv = (path: string, parsedEnv: object) => {
 export const emptyObjProps = (obj: EnvObject) => {
 	const objCopy = { ...obj };
 	Object.keys(objCopy).forEach(key => {
+		if (objCopy[key].includes("#")) {
+			if (objCopy[key].match(/(".*"|'.*')/g)) {
+				const objArr = objCopy[key].split(/(".*"|'.*')/);
+				objCopy[key] = " " + objArr[objArr.length - 1].trim();
+			} else {
+				const objArr = objCopy[key].split("#");
+				objCopy[key] = ` #${objArr[objArr.length - 1]}`;
+			}
+
+			return;
+		}
+
 		if (!key.startsWith("__COMMENT_")) {
 			objCopy[key] = "";
 		}
@@ -64,7 +76,7 @@ export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
 	vars.forEach(envObj => {
 		const [key] = Object.keys(envObj);
 		if (envCopy.hasOwnProperty(key)) {
-			envCopy[key] = envObj[key];
+			envCopy[key] = envCopy[key] || envObj[key];
 		}
 	});
 
