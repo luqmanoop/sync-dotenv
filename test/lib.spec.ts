@@ -109,55 +109,26 @@ describe("sync-dotenv lib", () => {
 	});
 
 	describe("getUniqueVarsFromEnv()", () => {
-		it("remove object property values", () => {
+		it("remove object property values", async () => {
 			const envObj = { name: "angry" };
 			const exampleEnvObj = { foo: "bar", name: "bird" };
-			const uniqueVarsArr = lib.getUniqueVarsFromEnvs(envObj, exampleEnvObj);
+			const uniqueVarsArr = await lib.getUniqueVarsFromEnvs(
+				envObj,
+				exampleEnvObj
+			);
 
 			expect(uniqueVarsArr.length).equals(1);
 			expect(uniqueVarsArr[0]).to.have.deep.property("name", "bird");
 		});
 	});
 
-	describe("removeStaleVarsFromEnv()", () => {
-		it("remove object property values", () => {
-			const envObj = {
-				APP_NAME: "awesomeapp",
-				APP_URL: "https://awesomeapp.io"
-			};
-			const exampleEnvObj = {
-				foo: "bar",
-				APP_URL: "https://localhost:3000"
-			};
-			const varsObj = lib.getUniqueVarsFromEnvs(envObj, exampleEnvObj);
-			const latestVars = lib.removeStaleVarsFromEnv(envObj, varsObj);
-
-			expect(latestVars).to.have.deep.property("APP_NAME", "");
-			expect(latestVars).to.have.deep.property(
-				"APP_URL",
-				exampleEnvObj.APP_URL
-			);
-			expect(latestVars).to.not.have.deep.property("foo");
-		});
-	});
-
-	describe("getParsedEnvs()", () => {
-		it("gets result of two envs parsed", () => {
-			const envObj = {
-				PORT: "5439"
-			};
-			const parsedEnvsResult = lib.getParsedEnvs(envObj, {});
-			expect(parsedEnvsResult).to.have.deep.property("PORT", "");
-		});
-	});
-
 	describe("syncWithExampleEnv()", () => {
-		it("sync .env with example env", () => {
+		it("sync .env with example env", async () => {
 			createFile(ENV_PATH, ENV_DATA);
 
 			const writeToExampleEnvSpy = sandbox.spy(lib, "writeToSampleEnv");
 
-			lib.syncWithSampleEnv(ENV_PATH, SAMPLE_ENV_PATH);
+			await lib.syncWithSampleEnv(ENV_PATH, SAMPLE_ENV_PATH);
 
 			expect(writeToExampleEnvSpy).callCount(1);
 		});

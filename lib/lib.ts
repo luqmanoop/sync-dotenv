@@ -2,12 +2,17 @@ import { resolve, basename } from "path";
 import fs from "fs";
 import parseEnv from "parse-dotenv";
 import globby from "globby";
+import pkgConf from "pkg-conf";
 
 const DEFAULT_ENV_PATH = resolve(process.cwd(), ".env");
 const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), ".env.example");
 
 interface EnvObject {
 	[key: string]: any;
+}
+
+interface Config {
+	preserve: [string];
 }
 
 export const fileExists = (path: string) => fs.existsSync(path);
@@ -32,10 +37,10 @@ export const emptyObjProps = (obj: EnvObject) => {
 		if (objCopy[key].includes("#")) {
 			if (objCopy[key].match(/(".*"|'.*')/g)) {
 				const objArr = objCopy[key].split(/(".*"|'.*')/);
-				objCopy[key] = " " + objArr[objArr.length - 1].trim();
+				objCopy[key] = objArr.slice(-1)[0].trim();
 			} else {
 				const objArr = objCopy[key].split("#");
-				objCopy[key] = ` #${objArr[objArr.length - 1]}`;
+				objCopy[key] = `#${objArr.slice(-1)[0]}`;
 			}
 
 			return;
@@ -49,59 +54,53 @@ export const emptyObjProps = (obj: EnvObject) => {
 	return objCopy;
 };
 
-export const getUniqueVarsFromEnvs = (
+export const getUniqueVarsFromEnvs = async (
 	env: EnvObject,
 	envExample: EnvObject
 ) => {
-	// making use of the .env because that should be the single source of truth
-	// the .env.example should be based off the .env and not otherwise
+	let config: Config = (await pkgConf("sync-dotenv")) as any;
+	let ignoreKeys = config.preserve || [];
+
 	const uniqueKeys = new Set(getObjKeys(env));
 	const uniqueKeysArray: Array<string> = Array.from(uniqueKeys);
-	return uniqueKeysArray.map((key: string) => {
-		if (key.startsWith("__COMMENT_")) {
-			return {
-				[key]: env[key]
-			};
-		}
-		return {
-			[key]: envExample[key] || ""
-		};
-	});
-};
 
-export const removeStaleVarsFromEnv = (env: object, vars: EnvObject[]) => {
-	let envCopy: EnvObject = { ...env };
-	envCopy = emptyObjProps(envCopy);
-
-	vars.forEach(envObj => {
-		const [key] = Object.keys(envObj);
-		if (envCopy.hasOwnProperty(key)) {
-			envCopy[key] = envCopy[key] || envObj[key];
-		}
+	let uniqueFromSource = uniqueKeysArray.map((key: string) => {
+		if (key.startsWith("__COMMENT_")) return { [key]: env[key] };
+		return { [key]: envExample[key] || "" };
 	});
 
-	return envCopy;
+	let presevedVars = getObjKeys(envExample)
+		.map(key => ({ [key]: envExample[key] }))
+		.filter(env => {
+			return ignoreKeys.includes(getObjKeys(env)[0]);
+		});
+
+	return [...uniqueFromSource, ...presevedVars];
 };
 
-export const getParsedEnvs = (env: object, envExample: object) => {
-	const envObj = { ...env };
-	const uniqueVars = getUniqueVarsFromEnvs(envObj, envExample);
-
-	return removeStaleVarsFromEnv(envObj, uniqueVars);
-};
-
-export const syncWithSampleEnv = (envPath: string, envExamplePath: string) => {
-	const parsedEnvs = getParsedEnvs(
-		parseEnv(envPath, { emptyLines: true, comments: true }),
-		parseEnv(envExamplePath)
+export const syncWithSampleEnv = async (
+	envPath: string,
+	envExamplePath: string
+) => {
+	let sourceEnv = emptyObjProps(
+		parseEnv(envPath, { emptyLines: true, comments: true })
 	);
-	writeToSampleEnv(envExamplePath, parsedEnvs);
+	let targetEnv = parseEnv(envExamplePath);
+
+	const uniqueVars = await getUniqueVarsFromEnvs(sourceEnv, targetEnv);
+	let envCopy: EnvObject = {};
+	uniqueVars.forEach(env => {
+		let [key] = getObjKeys(env);
+		envCopy[key] = env[key];
+	});
+
+	writeToSampleEnv(envExamplePath, envCopy);
 };
 
 const exit = (message: string, code: number = 1) =>
 	Promise.reject({ message, code });
 
-export const syncEnv = (
+export const syncEnv = async (
 	sampleEnv?: string,
 	source?: string,
 	samples?: string
@@ -132,8 +131,10 @@ export const syncEnv = (
 		return exit(`${sampleEnv || basename(DEFAULT_SAMPLE_ENV)} not found`);
 
 	const sourcePath = envPath;
-	SAMPLE_ENV_PATHS.forEach(samplePath =>
-		syncWithSampleEnv(sourcePath, samplePath)
-	);
+
+	for (let samplePath of SAMPLE_ENV_PATHS) {
+		await syncWithSampleEnv(sourcePath, samplePath);
+	}
+
 	return Promise.resolve(SAMPLE_ENV_PATHS.join(" "));
 };

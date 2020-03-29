@@ -94,6 +94,20 @@ Or with file other than `.env.example`
 }
 ```
 
+### Preserving variables in sample env
+
+Sometimes you need to preserve certain variables in your example env file, you can optionally allow this by adding a `sync-dotenv` config in `package.json` like so
+
+```js
+// package.json
+"scripts": {
+  ...
+},
+"sync-dotenv": {
+  "preserve": ["CHANNEL"]
+}
+```
+
 ## Related
 
 - [parse-dotenv](https://github.com/codeshifu/parse-dotenv) - zero dependency `.env` to javascript object parser
