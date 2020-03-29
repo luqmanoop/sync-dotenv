@@ -180,9 +180,9 @@ describe("sync-dotenv lib", () => {
 			});
 		});
 
-		it("syncs multiple sample env files", () => {
+		it("syncs multiple sample env files", async () => {
 			const spy = sandbox.spy(lib, "syncWithSampleEnv");
-			lib.syncEnv(undefined, undefined, ".env.*");
+			await lib.syncEnv(undefined, undefined, ".env.*");
 			expect(spy).callCount(2);
 		});
 
