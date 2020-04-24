@@ -91,8 +91,8 @@ describe("sync-dotenv lib", () => {
 		});
 
 		it("failed to write a .env.example successfully", () => {
-			const message = "Failed to write to file";
-			sandbox.stub(fs, "writeFile").callsArgWith(2, { message });
+			const message = "Sync failed";
+			sandbox.stub(fs, "writeFileSync").callsArgWith(2, { message });
 			try {
 				lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
 			} catch (error) {
