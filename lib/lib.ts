@@ -48,6 +48,7 @@ export const emptyObjProps = (obj: EnvObject) => {
 			return;
 		}
 
+		/* istanbul ignore else */
 		if (!key.startsWith("__COMMENT_")) {
 			objCopy[key] = "";
 		}
