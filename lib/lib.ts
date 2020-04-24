@@ -26,9 +26,11 @@ export const envToString = (parsed: EnvObject) =>
 		.replace(/(__\w+_\d+__=)/g, "");
 
 export const writeToSampleEnv = (path: string, parsedEnv: object) => {
-	fs.writeFile(path, envToString(parsedEnv), err => {
-		if (err) throw new Error(`Sync failed. ${err.message}`);
-	});
+	try{
+		fs.writeFileSync(path, envToString(parsedEnv));
+	}catch (e) {
+		throw new Error(`Sync failed. ${e.message}`);
+	}
 };
 
 export const emptyObjProps = (obj: EnvObject) => {
@@ -46,6 +48,7 @@ export const emptyObjProps = (obj: EnvObject) => {
 			return;
 		}
 
+		/* istanbul ignore else */
 		if (!key.startsWith("__COMMENT_")) {
 			objCopy[key] = "";
 		}
