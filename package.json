@@ -88,8 +88,8 @@
 		"rimraf": "2.6.3",
 		"sinon": "7.3.1",
 		"sinon-chai": "3.3.0",
-		"ts-node": "8.0.3",
-		"typescript": "3.3.3"
+		"ts-node": "^8.10.2",
+		"typescript": "^3.9.7"
 	},
 	"dependencies": {
 		"globby": "^9.2.0",
