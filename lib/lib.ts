@@ -1,5 +1,6 @@
 import { resolve, basename } from "path";
 import fs from "fs";
+import os from 'os';
 import parseEnv from "parse-dotenv";
 import globby from "globby";
 import pkgConf from "pkg-conf";
@@ -22,7 +23,7 @@ export const getObjKeys = (obj: object) => Object.keys(obj);
 export const envToString = (parsed: EnvObject) =>
 	getObjKeys(parsed)
 		.map(key => `${key}=${parsed[key] || ""}`)
-		.join("\r\n")
+		.join(os.EOL)
 		.replace(/(__\w+_\d+__=)/g, "");
 
 export const writeToSampleEnv = (path: string, parsedEnv: object) => {
