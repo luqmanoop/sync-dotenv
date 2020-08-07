@@ -17,12 +17,8 @@ const ENV_PATH = resolve(process.cwd(), ENV_FILENAME);
 const SAMPLE_ENV_PATH = resolve(process.cwd(), ".env.example");
 const SAMPLE_ENV_PATH_2 = resolve(process.cwd(), ".env.sample");
 
-const createFile = (
-	path: string,
-	data?: string | null,
-	cb: Callback = () => {}
-) => {
-	fs.writeFileSync(path, data, { encoding: "UTF-8" });
+const createFile = (path: string, data = "", cb: Callback = () => {}) => {
+	fs.writeFileSync(path, data, { encoding: "utf-8" });
 };
 
 const deleteFile = (path: string) => {
