@@ -91,6 +91,11 @@ export const syncWithSampleEnv = async (
 ) => {
 	// We do this so we can pass it via test as well
 	let config: Config = initialConfig || (await pkgConf("sync-dotenv")) as any;
+
+	// Set defaults
+	config.comments = typeof config.comments === 'undefined' ? true : config.comments;
+	config.emptyLines = typeof config.emptyLines === 'undefined' ? true : config.comments;
+
 	let sourceEnv = emptyObjProps(
 		parseEnv(envPath, { emptyLines: !!config.emptyLines, comments: !!config.comments })
 	);
