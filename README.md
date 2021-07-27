@@ -108,6 +108,22 @@ Sometimes you need to preserve certain variables in your example env file, you c
 }
 ```
 
+### Avoid comments or empty lines in sample env
+
+You might not want to copy empty lines or comments to your sample env, in this case you can still use `sync-dotenv` config in `package.json` with the following:
+
+```js
+// package.json
+"scripts": {
+  ...
+},
+"sync-dotenv": {
+  "emptyLines": true,
+  "comments": false
+}
+```
+Note that you can still combine those options with `preserve`.
+
 ## Related
 
 - [parse-dotenv](https://github.com/codeshifu/parse-dotenv) - zero dependency `.env` to javascript object parser
