@@ -13,7 +13,9 @@ interface EnvObject {
 }
 
 interface Config {
-	preserve: [string];
+	preserve?: [string];
+	emptyLines?: boolean;
+	comments?: boolean;
 }
 
 export const fileExists = (path: string) => fs.existsSync(path);
@@ -27,9 +29,9 @@ export const envToString = (parsed: EnvObject) =>
 		.replace(/(__\w+_\d+__=)/g, "");
 
 export const writeToSampleEnv = (path: string, parsedEnv: object) => {
-	try{
+	try {
 		fs.writeFileSync(path, envToString(parsedEnv));
-	}catch (e) {
+	} catch (e) {
 		throw new Error(`Sync failed. ${e.message}`);
 	}
 };
@@ -60,9 +62,9 @@ export const emptyObjProps = (obj: EnvObject) => {
 
 export const getUniqueVarsFromEnvs = async (
 	env: EnvObject,
-	envExample: EnvObject
+	envExample: EnvObject,
+	config: Config = {}
 ) => {
-	let config: Config = (await pkgConf("sync-dotenv")) as any;
 	let ignoreKeys = config.preserve || [];
 
 	const uniqueKeys = new Set(getObjKeys(env));
@@ -76,7 +78,7 @@ export const getUniqueVarsFromEnvs = async (
 	let presevedVars = getObjKeys(envExample)
 		.map(key => ({ [key]: envExample[key] }))
 		.filter(env => {
-			return ignoreKeys.includes(getObjKeys(env)[0]);
+			return ignoreKeys.length && ignoreKeys.includes(getObjKeys(env)[0]);
 		});
 
 	return [...uniqueFromSource, ...presevedVars];
@@ -84,14 +86,22 @@ export const getUniqueVarsFromEnvs = async (
 
 export const syncWithSampleEnv = async (
 	envPath: string,
-	envExamplePath: string
+	envExamplePath: string,
+	initialConfig?: Config
 ) => {
+	// We do this so we can pass it via test as well
+	let config: Config = initialConfig || (await pkgConf("sync-dotenv")) as any;
+
+	// Set defaults
+	config.comments = typeof config.comments === 'undefined' ? true : config.comments;
+	config.emptyLines = typeof config.emptyLines === 'undefined' ? true : config.comments;
+
 	let sourceEnv = emptyObjProps(
-		parseEnv(envPath, { emptyLines: true, comments: true })
+		parseEnv(envPath, { emptyLines: !!config.emptyLines, comments: !!config.comments })
 	);
 	let targetEnv = parseEnv(envExamplePath);
 
-	const uniqueVars = await getUniqueVarsFromEnvs(sourceEnv, targetEnv);
+	const uniqueVars = await getUniqueVarsFromEnvs(sourceEnv, targetEnv, config);
 	let envCopy: EnvObject = {};
 	uniqueVars.forEach(env => {
 		let [key] = getObjKeys(env);
@@ -115,8 +125,8 @@ export const syncEnv = async (
 	const SAMPLE_ENV_PATHS: string[] = !samples
 		? [resolve(process.cwd(), sampleEnv || DEFAULT_SAMPLE_ENV)]
 		: globby
-				.sync(samples)
-				.map((sample: string) => resolve(process.cwd(), sample));
+			.sync(samples)
+			.map((sample: string) => resolve(process.cwd(), sample));
 
 	let envPath = source
 		? fileExists(source)

@@ -17,7 +17,7 @@ const ENV_PATH = resolve(process.cwd(), ENV_FILENAME);
 const SAMPLE_ENV_PATH = resolve(process.cwd(), ".env.example");
 const SAMPLE_ENV_PATH_2 = resolve(process.cwd(), ".env.sample");
 
-const createFile = (path: string, data = "", cb: Callback = () => {}) => {
+const createFile = (path: string, data = "", cb: Callback = () => { }) => {
 	fs.writeFileSync(path, data, { encoding: "utf-8" });
 };
 
@@ -124,9 +124,10 @@ describe("sync-dotenv lib", () => {
 
 			const writeToExampleEnvSpy = sandbox.spy(lib, "writeToSampleEnv");
 
-			await lib.syncWithSampleEnv(ENV_PATH, SAMPLE_ENV_PATH);
+			await lib.syncWithSampleEnv(ENV_PATH, SAMPLE_ENV_PATH, { comments: false });
 
 			expect(writeToExampleEnvSpy).callCount(1);
+			expect(writeToExampleEnvSpy.getCalls()[0].lastArg).to.not.haveOwnProperty('__COMMENT_1__');
 		});
 	});
 
