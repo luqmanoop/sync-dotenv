@@ -90,7 +90,7 @@
 		"typescript": "^3.9.7"
 	},
 	"dependencies": {
-		"globby": "^9.2.0",
+		"globby": "^11.1.0",
 		"meow": "5.0.0",
 		"parse-dotenv": "2.1.0",
 		"pkg-conf": "^3.1.0"
