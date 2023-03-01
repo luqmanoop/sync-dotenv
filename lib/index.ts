@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import cp from "child_process";
-import meow from "meow";
-import { syncEnv } from "./lib";
+import cp from 'child_process';
+import meow from 'meow';
+import { syncEnv } from './lib';
 
 const cli = meow(
 	`
@@ -27,19 +27,29 @@ const cli = meow(
 `,
 	{
 		flags: {
+			env: {
+				type: 'string',
+				alias: 'e',
+			},
 			sample: {
-				type: "string"
-			}
-		}
+				type: 'string',
+				alias: 's',
+			},
+			samples: {
+				type: 'string',
+				alias: 'S',
+			},
+		},
 	}
 );
 
-const { sample, s, env, e, samples, S } = cli.flags;
+const { sample, env, samples } = cli.flags;
 
-syncEnv(sample || s, env || e, samples || S)
-	.then(sampleEnv => cp.exec(`git add ${sampleEnv}`))
+syncEnv(sample, env, samples)
+	.then((sampleEnv) => cp.exec(`git add ${sampleEnv}`))
 	.catch(({ message, code }) => {
-		console.log(message);
+		// eslint-disable-next-line no-console
+		console.error(message);
 		process.exit(code);
 	});
 

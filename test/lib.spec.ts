@@ -91,8 +91,8 @@ describe("sync-dotenv lib", () => {
 			sandbox.stub(fs, "writeFileSync").callsArgWith(2, { message });
 			try {
 				lib.writeToSampleEnv(SAMPLE_ENV_PATH, parseEnv(ENV_PATH));
-			} catch (error) {
-				expect(error.message).contains(message);
+			} catch (error: unknown) {
+				expect((error as Error).message).contains(message);
 			}
 		});
 	});
