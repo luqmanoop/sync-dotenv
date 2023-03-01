@@ -1,12 +1,12 @@
-import { resolve, basename } from "path";
-import fs from "fs";
+import { resolve, basename } from 'path';
+import fs from 'fs';
 import os from 'os';
-import parseEnv from "parse-dotenv";
-import globby from "globby";
-import pkgConf from "pkg-conf";
+import parseEnv from 'parse-dotenv';
+import globby from 'globby';
+import pkgConf from 'pkg-conf';
 
-const DEFAULT_ENV_PATH = resolve(process.cwd(), ".env");
-const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), ".env.example");
+const DEFAULT_ENV_PATH = resolve(process.cwd(), '.env');
+const DEFAULT_SAMPLE_ENV = resolve(process.cwd(), '.env.example');
 
 interface EnvObject {
 	[key: string]: any;
@@ -24,27 +24,29 @@ export const getObjKeys = (obj: object) => Object.keys(obj);
 
 export const envToString = (parsed: EnvObject) =>
 	getObjKeys(parsed)
-		.map(key => `${key}=${parsed[key] || ""}`)
+		.map((key) => `${key}=${parsed[key] || ''}`)
 		.join(os.EOL)
-		.replace(/(__\w+_\d+__=)/g, "");
+		.replace(/(__\w+_\d+__=)/g, '');
 
 export const writeToSampleEnv = (path: string, parsedEnv: object) => {
 	try {
 		fs.writeFileSync(path, envToString(parsedEnv));
-	} catch (e) {
-		throw new Error(`Sync failed. ${e.message}`);
+	} catch (error: unknown) {
+		throw new Error(
+			`Sync failed. ${error instanceof Error ? error.message : String(error)}`
+		);
 	}
 };
 
 export const emptyObjProps = (obj: EnvObject) => {
 	const objCopy = { ...obj };
-	Object.keys(objCopy).forEach(key => {
-		if (objCopy[key].includes("#")) {
+	Object.keys(objCopy).forEach((key) => {
+		if (objCopy[key].includes('#')) {
 			if (objCopy[key].match(/(".*"|'.*')/g)) {
 				const objArr = objCopy[key].split(/(".*"|'.*')/);
 				objCopy[key] = objArr.slice(-1)[0].trim();
 			} else {
-				const objArr = objCopy[key].split("#");
+				const objArr = objCopy[key].split('#');
 				objCopy[key] = `#${objArr.slice(-1)[0]}`;
 			}
 
@@ -52,8 +54,8 @@ export const emptyObjProps = (obj: EnvObject) => {
 		}
 
 		/* istanbul ignore else */
-		if (!key.startsWith("__COMMENT_")) {
-			objCopy[key] = "";
+		if (!key.startsWith('__COMMENT_')) {
+			objCopy[key] = '';
 		}
 	});
 
@@ -65,21 +67,22 @@ export const getUniqueVarsFromEnvs = async (
 	envExample: EnvObject,
 	config: Config = {}
 ) => {
-	let ignoreKeys = config.preserve || [];
+	const ignoreKeys = config.preserve || [];
 
 	const uniqueKeys = new Set(getObjKeys(env));
 	const uniqueKeysArray: Array<string> = Array.from(uniqueKeys);
 
-	let uniqueFromSource = uniqueKeysArray.map((key: string) => {
-		if (key.startsWith("__COMMENT_")) return { [key]: env[key] };
-		return { [key]: envExample[key] || "" };
+	const uniqueFromSource = uniqueKeysArray.map((key: string) => {
+		if (key.startsWith('__COMMENT_')) return { [key]: env[key] };
+		return { [key]: envExample[key] || '' };
 	});
 
-	let presevedVars = getObjKeys(envExample)
-		.map(key => ({ [key]: envExample[key] }))
-		.filter(env => {
-			return ignoreKeys.length && ignoreKeys.includes(getObjKeys(env)[0]);
-		});
+	const presevedVars = getObjKeys(envExample)
+		.map((key) => ({ [key]: envExample[key] }))
+		.filter(
+			// eslint-disable-next-line no-shadow
+			(env) => ignoreKeys.length && ignoreKeys.includes(getObjKeys(env)[0])
+		);
 
 	return [...uniqueFromSource, ...presevedVars];
 };
@@ -90,21 +93,27 @@ export const syncWithSampleEnv = async (
 	initialConfig?: Config
 ) => {
 	// We do this so we can pass it via test as well
-	let config: Config = initialConfig || (await pkgConf("sync-dotenv")) as any;
+	const config: Config =
+		initialConfig || ((await pkgConf('sync-dotenv')) as any);
 
 	// Set defaults
-	config.comments = typeof config.comments === 'undefined' ? true : config.comments;
-	config.emptyLines = typeof config.emptyLines === 'undefined' ? true : config.comments;
+	config.comments =
+		typeof config.comments === 'undefined' ? true : config.comments;
+	config.emptyLines =
+		typeof config.emptyLines === 'undefined' ? true : config.comments;
 
-	let sourceEnv = emptyObjProps(
-		parseEnv(envPath, { emptyLines: !!config.emptyLines, comments: !!config.comments })
+	const sourceEnv = emptyObjProps(
+		parseEnv(envPath, {
+			emptyLines: !!config.emptyLines,
+			comments: !!config.comments,
+		})
 	);
-	let targetEnv = parseEnv(envExamplePath);
+	const targetEnv = parseEnv(envExamplePath);
 
 	const uniqueVars = await getUniqueVarsFromEnvs(sourceEnv, targetEnv, config);
-	let envCopy: EnvObject = {};
-	uniqueVars.forEach(env => {
-		let [key] = getObjKeys(env);
+	const envCopy: EnvObject = {};
+	uniqueVars.forEach((env) => {
+		const [key] = getObjKeys(env);
 		envCopy[key] = env[key];
 	});
 
@@ -112,6 +121,7 @@ export const syncWithSampleEnv = async (
 };
 
 const exit = (message: string, code: number = 1) =>
+	// eslint-disable-next-line prefer-promise-reject-errors
 	Promise.reject({ message, code });
 
 export const syncEnv = async (
@@ -119,16 +129,17 @@ export const syncEnv = async (
 	source?: string,
 	samples?: string
 ): Promise<{ msg: string; code: number } | string> => {
-	if (sampleEnv && (sampleEnv === ".env" || basename(sampleEnv) === ".env"))
-		return exit("Cannot sync .env with .env");
+	if (sampleEnv && (sampleEnv === '.env' || basename(sampleEnv) === '.env'))
+		return exit('Cannot sync .env with .env');
 
 	const SAMPLE_ENV_PATHS: string[] = !samples
 		? [resolve(process.cwd(), sampleEnv || DEFAULT_SAMPLE_ENV)]
 		: globby
-			.sync(samples)
-			.map((sample: string) => resolve(process.cwd(), sample));
+				.sync(samples)
+				.map((sample: string) => resolve(process.cwd(), sample));
 
-	let envPath = source
+	// eslint-disable-next-line no-nested-ternary
+	const envPath = source
 		? fileExists(source)
 			? source
 			: null
@@ -146,9 +157,9 @@ export const syncEnv = async (
 
 	const sourcePath = envPath;
 
-	for (let samplePath of SAMPLE_ENV_PATHS) {
+	for (const samplePath of SAMPLE_ENV_PATHS) {
 		await syncWithSampleEnv(sourcePath, samplePath);
 	}
 
-	return Promise.resolve(SAMPLE_ENV_PATHS.join(" "));
+	return Promise.resolve(SAMPLE_ENV_PATHS.join(' '));
 };
